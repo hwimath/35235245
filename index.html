@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>초등어휘 단어 게임</title>
+    <style>
+        body {
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            background-color: #FFFAF0;
+            color: #333;
+            text-align: center;
+            padding: 20px;
+        }
+        h1 {
+            color: #FF69B4;
+        }
+        .hidden {
+            display: none;
+        }
+        .section {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #FFF0F5;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .button {
+            background-color: #FF69B4;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin: 15px 5px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .button:hover {
+            background-color: #FF1493;
+        }
+        .quiz-option {
+            display: block;
+            text-align: left;
+            margin: 10px 0;
+        }
+        input[type="radio"] {
+            margin-right: 10px;
+        }
+        #score {
+            font-size: 24px;
+            color: #32CD32;
+        }
+    </style>
+</head>
+<body>
+
+<h1>✨ 초등어휘 단어 게임 ✨</h1>
+
+<div id="studySection" class="section">
+    <div id="studyContent">
+        <!-- Study content will be injected here -->
+    </div>
+    <button class="button" id="nextStudyBtn">다음</button>
+</div>
+
+<div id="quizSection" class="section hidden">
+    <h2>단어 퀴즈</h2>
+    <div id="quizContent">
+        <!-- Quiz content will be injected here -->
+    </div>
+    <button class="button" id="nextQuizBtn">다음</button>
+    <button class="button hidden" id="submitQuizBtn">제출</button>
+</div>
+
+<div id="scoreSection" class="section hidden">
+    <h2>🎉 점수 🎉</h2>
+    <p id="score">0 / 10</p>
+    <button class="button" onclick="location.reload()">다시 하기</button>
+</div>
+
+<script>
+// 데이터 정의
+const words = [
+    { word: "가짜", definition: "진짜가 아닌 것, 거짓된 것." },
+    { word: "각", definition: "각각의, 각각의 사람이나 사물." },
+    { word: "각각", definition: "하나하나 따로따로." },
+    { word: "각국", definition: "각 나라." },
+    { word: "각자", definition: "각각의 사람." },
+    { word: "각종", definition: "여러 가지 종류." },
+    { word: "간", definition: "두 대상 사이. 예: 서울과 부산 간." },
+    { word: "간단하다", definition: "복잡하지 않고 쉽고 단순하다." }
+];
+
+const sentences = {
+    "가짜": [
+        "이 가방은 진품이 아닌 가짜입니다.",
+        "그는 가짜 신분증을 사용했다.",
+        "가짜 뉴스에 속지 마세요."
+    ],
+    "각": [
+        "각 학생은 숙제를 제출하세요.",
+        "각 나라의 문화는 다르다.",
+        "회의에서 각 의견을 들었다."
+    ],
+    "각각": [
+        "사과와 배를 각각 한 개씩 먹었다.",
+        "학생들은 각각 자리에 앉았다.",
+        "그들은 각각 다른 길로 갔다."
+    ],
+    "각국": [
+        "각국의 대표들이 모였다.",
+        "올림픽에는 각국 선수들이 참여한다.",
+        "각국 문화에 대해 공부했다."
+    ],
+    "각자": [
+        "각자의 역할이 중요하다.",
+        "우리는 각자 집으로 돌아갔다.",
+        "각자 준비물을 챙기세요."
+    ],
+    "각종": [
+        "박물관에는 각종 유물이 있다.",
+        "가게에는 각종 과일이 있다.",
+        "축제에는 각종 행사가 열렸다."
+    ],
+    "간": [
+        "서울과 부산 간 열차를 탔다.",
+        "두 나라 간의 우호 관계가 중요하다.",
+        "부모와 자식 간의 대화가 필요하다."
+    ],
+    "간단하다": [
+        "이 문제는 매우 간단하다.",
+        "요리법이 간단해서 쉽게 만들 수 있다.",
+        "설명이 간단해서 이해하기 쉽다."
+    ]
+};
+
+const quizQuestions = [
+    {
+        question: "1. 이 가방은 진품이 아닌 ____입니다.",
+        options: ["가짜", "각자"],
+        correctAnswer: "가짜"
+    },
+    {
+        question: "2. 학생들은 ____ 자리에 앉았다.",
+        options: ["각각", "간단한"],
+        correctAnswer: "각각"
+    },
+    {
+        question: "3. 우리는 ____ 집으로 돌아갔다.",
+        options: ["가짜", "각자"],
+        correctAnswer: "각자"
+    },
+    {
+        question: "4. 두 나라 ____의 우호 관계가 중요하다.",
+        options: ["간", "각종"],
+        correctAnswer: "간"
+    },
+    {
+        question: "5. 요리법이 ____ 쉽게 만들 수 있다.",
+        options: ["간단해서", "각자여서"],
+        correctAnswer: "간단해서"
+    },
+    {
+        question: "6. 박물관에는 ____ 유물이 있다.",
+        options: ["각종", "각국"],
+        correctAnswer: "각종"
+    },
+    {
+        question: "7. ____의 대표들이 모였다.",
+        options: ["각국", "간단"],
+        correctAnswer: "각국"
+    },
+    {
+        question: "8. 회의에서 ____ 의견을 들었다.",
+        options: ["각", "가짜"],
+        correctAnswer: "각"
+    },
+    {
+        question: "9. 그들은 ____ 다른 길로 갔다.",
+        options: ["각각", "각자"],
+        correctAnswer: "각각"
+    },
+    {
+        question: "10. 이 문제는 매우 ____.",
+        options: ["간단하다", "각국이다"],
+        correctAnswer: "간단하다"
+    }
+];
+
+// 상태 변수
+let currentWordIndex = 0;
+let currentQuizIndex = 0;
+let score = 0;
+
+// 초기화 함수
+function showDefinition() {
+    if (currentWordIndex < words.length) {
+        const word = words[currentWordIndex];
+        document.getElementById('studyContent').innerHTML = `
+            <h2>단어 뜻 배우기</h2>
+            <h3>${word.word}</h3>
+            <p>${word.definition}</p>
+        `;
+    } else {
+        // 모든 단어 학습이 끝나면 퀴즈 시작
+        document.getElementById('studySection').classList.add('hidden');
+        initQuiz();
+        document.getElementById('quizSection').classList.remove('hidden');
+    }
+}
+
+function showSentences() {
+    const word = words[currentWordIndex];
+    const sentenceList = sentences[word.word];
+    let sentencesHTML = `<h2>예문 배우기</h2><h3>${word.word}</h3>`;
+    sentenceList.forEach(sentence => {
+        sentencesHTML += `<p>• ${sentence}</p>`;
+    });
+    document.getElementById('studyContent').innerHTML = sentencesHTML;
+}
+
+// 버튼 이벤트 리스너
+document.getElementById('nextStudyBtn').addEventListener('click', () => {
+    if (document.getElementById('studyContent').innerHTML.includes('단어 뜻 배우기')) {
+        showSentences();
+    } else {
+        currentWordIndex++;
+        showDefinition();
+    }
+});
+
+// 퀴즈 함수
+function initQuiz() {
+    if (currentQuizIndex < quizQuestions.length) {
+        const q = quizQuestions[currentQuizIndex];
+        document.getElementById('quizContent').innerHTML = `
+            <p>${q.question}</p>
+            ${q.options.map((option, index) => `
+                <label class="quiz-option">
+                    <input type="radio" name="quiz${currentQuizIndex}" value="${option}">
+                    ${option}
+                </label>
+            `).join('')}
+        `;
+        // Toggle buttons
+        if (currentQuizIndex === quizQuestions.length - 1) {
+            document.getElementById('nextQuizBtn').classList.add('hidden');
+            document.getElementById('submitQuizBtn').classList.remove('hidden');
+        } else {
+            document.getElementById('nextQuizBtn').classList.remove('hidden');
+        }
+    }
+}
+
+document.getElementById('nextQuizBtn').addEventListener('click', () => {
+    const q = quizQuestions[currentQuizIndex];
+    const selected = document.querySelector(`input[name="quiz${currentQuizIndex}"]:checked`);
+    if (selected) {
+        if (selected.value === q.correctAnswer) {
+            score++;
+        }
+        currentQuizIndex++;
+        initQuiz();
+    } else {
+        alert("답을 선택해주세요!");
+    }
+});
+
+document.getElementById('submitQuizBtn').addEventListener('click', () => {
+    const q = quizQuestions[currentQuizIndex];
+    const selected = document.querySelector(`input[name="quiz${currentQuizIndex}"]:checked`);
+    if (selected) {
+        if (selected.value === q.correctAnswer) {
+            score++;
+        }
+        currentQuizIndex++;
+        showScore();
+    } else {
+        alert("답을 선택해주세요!");
+    }
+});
+
+function showScore() {
+    document.getElementById('quizSection').classList.add('hidden');
+    document.getElementById('score').innerText = `${score} / ${quizQuestions.length}`;
+    document.getElementById('scoreSection').classList.remove('hidden');
+}
+
+// 초기화 시작
+showDefinition();
+</script>
+
+</body>
+</html>
